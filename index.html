@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherSphere | Realtime Dashboard</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); text-align: center; width: 320px; border: 1px solid #334155; }
+        h1 { font-size: 1.6rem; margin: 0 0 5px 0; color: #94a3b8; font-weight: 600; letter-spacing: -0.5px; }
+        .condition { font-size: 1.1rem; color: #cbd5e1; margin-bottom: 20px; font-weight: 400; text-transform: capitalize; }
+        .temp { font-size: 4.8rem; font-weight: 800; color: #38bdf8; margin: 10px 0; font-family: monospace; }
+        .meta { font-size: 0.8rem; color: #64748b; margin-top: 25px; border-top: 1px solid #334155; padding-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>WeatherSphere</h1>
+        <div class="condition" id="cond">Connecting...</div>
+        <div class="temp" id="temp">--°C</div>
+        <div class="meta">Automatic 10s Updates • Sync: <span id="time">Never</span></div>
+    </div>
+
+    <script>
+        // STEP 4 NOTE: Leave this placeholder string alone for now. 
+        // We will swap it with your custom cloud link in Step 6 below.
+        const BACKEND_URL = "PLACEHOLDER_RENDER_URL_HERE";
+
+        async function fetchFreshData() {
+            if (BACKEND_URL === "PLACEHOLDER_RENDER_URL_HERE") {
+                document.getElementById('cond').innerText = "Awaiting deployment URL configuration...";
+                return;
+            }
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/weather`);
+                const weatherData = await res.json();
+                
+                document.getElementById('temp').innerText = weatherData.temperature;
+                document.getElementById('cond').innerText = weatherData.condition;
+                document.getElementById('time').innerText = weatherData.timestamp;
+            } catch (err) {
+                document.getElementById('cond').innerText = "Reconnecting to server...";
+                console.log("Background API check down:", err);
+            }
+        }
+
+        // Run looking for data immediately upon arrival
+        fetchFreshData();
+        
+        // Setup clock ticking to re-request calculations exactly every 10 seconds
+        setInterval(fetchFreshData, 10000);
+    </script>
+</body>
+</html>
